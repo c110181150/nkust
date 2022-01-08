@@ -79,8 +79,20 @@ public class youtubeAPI {
                 System.out.println(title);
                 element[i]=title;
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.out.println(e);
+        }
+        for (int i = 0; i < 3; i++) {
+            URL channel = new URL("https://www.youtube.com/watch?v=%22+apple[i]);
+            System.out.println("網址:"+channel);
+            System.out.println("標題:"+element[i]);
+            System.out.println("發布時間:"+dog[i]);
+            for(int j=0;j<3;j++) {
+                System.out.println("評論" + j + ":" + banana[i + j]);
+                System.out.println("留言時間:" + cat[i + j]);
+            }
+            System.out.println("--------------------------------------------");
         }
     }
 }
