@@ -6,23 +6,23 @@ import java.net.URL;
 
 public class youtubeAPI {
     public static void main(String[] args) throws MalformedURLException {
-        var k = 0;
-        var a = 3;  //影片數量
-        var b = 4; //留言數量
-        String[] VideoID = new String[a];
-        String[] Comment = new String[a*b];
-        String[] CommentTime = new String[a*b];
-        String[] PublishTime = new String[a];
-        String[] Title = new String[a];
+        var allComment = 0;
+        var videoNumber = 3;  //影片數量
+        var commentNumber = 3; //留言數量
+        String[] VideoID = new String[videoNumber];
+        String[] Comment = new String[videoNumber*commentNumber];
+        String[] CommentTime = new String[videoNumber*commentNumber];
+        String[] PublishTime = new String[videoNumber];
+        String[] Title = new String[videoNumber];
         try {
             String youtubeSearch = "阿滴";
-            String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" + youtubeSearch + "&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&type=video&maxResults="+a).ignoreContentType(true).execute().body();
+            String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" + youtubeSearch + "&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&type=video&maxResults="+videoNumber).ignoreContentType(true).execute().body();
 //            System.out.println(json);
 
             JSONObject resObject = new JSONObject(json);
             var Object = resObject.getJSONArray("items");
 
-            for (int i = 0; i < a; i++) {
+            for (int i = 0; i < videoNumber ; i++) {
                 var items = Object.getJSONObject(i);
 //                System.out.println(items);
                 var id = items.getJSONObject("id");
@@ -39,14 +39,14 @@ public class youtubeAPI {
 //        }
 
         try {
-            for (int i = 0; i < a; i++) {
-                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&videoId=" + VideoID[i] + "&maxResults="+b+"&order=relevance&textFormat=plainText ").ignoreContentType(true).execute().body();
+            for (int i = 0; i < videoNumber ; i++) {
+                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&videoId=" + VideoID[i] + "&maxResults="+commentNumber+"&order=relevance&textFormat=plainText ").ignoreContentType(true).execute().body();
 //                System.out.println(json);
 
                 JSONObject Object = new JSONObject(json);
                 var items = Object.getJSONArray("items");
 //                System.out.println(items);
-                for (int j = 0; j < b; j++) {
+                for (int j = 0; j < commentNumber; j++) {
                     var array = items.getJSONObject(j);
 //                    System.out.println(array);
                     var snippet = array.getJSONObject("snippet");
@@ -58,11 +58,11 @@ public class youtubeAPI {
                     var comment = snippet2.getString("textDisplay");
 //                    System.out.println(Comment);
 
-                    Comment[k] = comment;
+                    Comment[allComment] = comment;
                     var commentTime = snippet2.getString("publishedAt");
 //                    System.out.println(commentTime);
-                    CommentTime[k] = commentTime;
-                    k++;
+                    CommentTime[allComment] = commentTime;
+                    allComment++;
                 }
             }
         } catch (Exception e) {
@@ -71,9 +71,9 @@ public class youtubeAPI {
 
 
         try {
-            for (int i = 0; i < a; i++) {
+            for (int i = 0; i < videoNumber; i++) {
 //                System.out.println(apple[i]);
-                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&id=" + VideoID[i] + "&maxResults="+b).ignoreContentType(true).execute().body();
+                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&id=" + VideoID[i] + "&maxResults="+commentNumber).ignoreContentType(true).execute().body();
 //                System.out.println(json);
 
                 JSONObject Object = new JSONObject(json);
@@ -97,16 +97,16 @@ public class youtubeAPI {
 //      for(int i = 0 ; i <10 ; i++){
 //      System.out.println(cat[i]);
 //      }
-        k = 0;
-        for (int i = 0; i < a; i++) {
+        allComment = 0;
+        for (int i = 0; i < videoNumber; i++) {
             URL channel = new URL("https://www.youtube.com/watch?v=" + VideoID[i]);
             System.out.println("網址:" + channel);
             System.out.println("標題:" + Title[i]);
             System.out.println("發布時間:" + PublishTime[i]);
-            for (int j = 0; j < b; j++) {
-                System.out.println("評論" + j + ":" + Comment[k]);
-                System.out.println("留言時間:" + CommentTime[k]);
-                k++;
+            for (int j = 0; j < commentNumber ; j++) {
+                System.out.println("評論" + j + ":" + Comment[allComment]);
+                System.out.println("留言時間:" + CommentTime[allComment]);
+                allComment++;
             }
             System.out.println("--------------------------------------------");
         }
