@@ -1,33 +1,43 @@
-
 import org.jsoup.Jsoup;
 import org.json.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 
 public class youtubeAPI {
     public static void main(String[] args) throws MalformedURLException {
-        var allComment = 0;
-        var videoNumber = 3;  //影片數量
-        var commentNumber = 3; //留言數量
+        int allComment = 0;
+        int videoNumber = 0;  //影片數量
+        int commentNumber = 0; //留言數量
+        String youtubeSearch = "";
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("請輸入關鍵字、影片數量、評論數量(以Tab鍵分開)：");
+        youtubeSearch = scanner.next();
+        videoNumber = scanner.nextInt();
+        commentNumber = scanner.nextInt();
+        System.out.println("您輸入的關鍵字為：" + youtubeSearch);
+        System.out.println("您輸入的影片數量為：" + videoNumber);
+        System.out.println("您輸入的評論數量為：" + commentNumber );
+        
         String[] VideoID = new String[videoNumber];
         String[] Comment = new String[videoNumber*commentNumber];
         String[] CommentTime = new String[videoNumber*commentNumber];
         String[] PublishTime = new String[videoNumber];
         String[] Title = new String[videoNumber];
+        
         try {
-            String youtubeSearch = "阿滴";
             String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" + youtubeSearch + "&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&type=video&maxResults="+videoNumber).ignoreContentType(true).execute().body();
 //            System.out.println(json);
 
             JSONObject resObject = new JSONObject(json);
-            var Object = resObject.getJSONArray("items");
-
+            JSONArray Object = resObject.getJSONArray("items");
             for (int i = 0; i < videoNumber ; i++) {
-                var items = Object.getJSONObject(i);
+                JSONObject items = Object.getJSONObject(i);
 //                System.out.println(items);
-                var id = items.getJSONObject("id");
+                JSONObject id = items.getJSONObject("id");
 //                System.out.println(id);
-                var videoID = id.getString("videoId");
+                String videoID = id.getString("videoId");
 //                System.out.println(videoID);
                 VideoID[i] = videoID;
             }
@@ -44,22 +54,23 @@ public class youtubeAPI {
 //                System.out.println(json);
 
                 JSONObject Object = new JSONObject(json);
-                var items = Object.getJSONArray("items");
+                JSONArray items = Object.getJSONArray("items");
+
 //                System.out.println(items);
                 for (int j = 0; j < commentNumber; j++) {
-                    var array = items.getJSONObject(j);
+                    JSONObject array = items.getJSONObject(j);
 //                    System.out.println(array);
-                    var snippet = array.getJSONObject("snippet");
+                    JSONObject snippet = array.getJSONObject("snippet");
 //                    System.out.println(snippet);
-                    var topLevelComment = snippet.getJSONObject("topLevelComment");
+                    JSONObject topLevelComment = snippet.getJSONObject("topLevelComment");
 //                    System.out.println(topLevelComment);
-                    var snippet2 = topLevelComment.getJSONObject("snippet");
+                    JSONObject snippet2 = topLevelComment.getJSONObject("snippet");
 //                    System.out.println(snippet2);
-                    var comment = snippet2.getString("textDisplay");
+                    String comment = snippet2.getString("textDisplay");
 //                    System.out.println(Comment);
 
                     Comment[allComment] = comment;
-                    var commentTime = snippet2.getString("publishedAt");
+                    String commentTime = snippet2.getString("publishedAt");
 //                    System.out.println(commentTime);
                     CommentTime[allComment] = commentTime;
                     allComment++;
@@ -73,20 +84,20 @@ public class youtubeAPI {
         try {
             for (int i = 0; i < videoNumber; i++) {
 //                System.out.println(apple[i]);
-                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&id=" + VideoID[i] + "&maxResults="+commentNumber).ignoreContentType(true).execute().body();
+                String json = Jsoup.connect("https://www.googleapis.com/youtube/v3/videos?part=snippet&key=AIzaSyDUKYPZIaz4O3t5dyqClNuppGp3V9m-fPI&id=" + VideoID[i] + "&maxResults="+videoNumber).ignoreContentType(true).execute().body();
 //                System.out.println(json);
 
                 JSONObject Object = new JSONObject(json);
-                var items = Object.getJSONArray("items");
+                JSONArray items = Object.getJSONArray("items");
 //                System.out.println(items);
-                var array = items.getJSONObject(0);
+                JSONObject array = items.getJSONObject(0);
 //                System.out.println(array);
-                var snippet = array.getJSONObject("snippet");
+                JSONObject snippet = array.getJSONObject("snippet");
 //                System.out.println(snippet);
-                var publishedAt = snippet.getString("publishedAt");
+                String publishedAt = snippet.getString("publishedAt");
 //                System.out.println(publishedAt);
                 PublishTime[i] = publishedAt;
-                var title = snippet.getString("title");
+                String title = snippet.getString("title");
 //                System.out.println(title);
                 Title[i] = title;
             }
@@ -102,7 +113,7 @@ public class youtubeAPI {
             URL channel = new URL("https://www.youtube.com/watch?v=" + VideoID[i]);
             System.out.println("網址:" + channel);
             System.out.println("標題:" + Title[i]);
-            System.out.println("發布時間:" + PublishTime[i]);
+            System.out.println("發佈時間:" + PublishTime[i]);
             for (int j = 0; j < commentNumber ; j++) {
                 System.out.println("評論" + j + ":" + Comment[allComment]);
                 System.out.println("留言時間:" + CommentTime[allComment]);
@@ -112,6 +123,3 @@ public class youtubeAPI {
         }
     }
 }
-
-
-
